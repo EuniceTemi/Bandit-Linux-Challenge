@@ -28,12 +28,25 @@ Skills Demonstrated: Linux CLI, SSH, Cryptography, File Permissions, Data Filter
 ## 📖 Level-by-Level Walkthrough
 
 ### 🔒 Level 0 ➔ Level 1
+* **Objective:** Log into the game server using SSH and locate the password hidden in a file named `readme` in the home directory.
+* **Concept Learned:** Reading text in files.
+* **Command Executed:**
+  ```bash
+  # Step 1: Connect via SSH using the provided port
+  ssh bandit0@bandit.labs.overthewire.org -p 2220
+
+  # Step 2: Read the file using the relative path prefix
+  cat readme
+  ```
+* **Methodology:** Using th `cat` command to read text in a file.
+
+### 🔒 Level 1 ➔ Level 2
 * **Objective:** Log into the game server using SSH and locate the password hidden in a file named `-` in the home directory.
 * **Concept Learned:** Handling special characters/hyphens in filenames.
 * **Command Executed:**
   ```bash
   # Step 1: Connect via SSH using the provided port
-  ssh bandit0@bandit.labs.overthewire.org -p 2220
+  ssh bandit1@bandit.labs.overthewire.org -p 2220
 
   # Step 2: Read the file using the relative path prefix
   cat ./-
