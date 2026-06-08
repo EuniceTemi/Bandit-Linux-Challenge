@@ -53,6 +53,20 @@ Skills Demonstrated: Linux CLI, SSH, Cryptography, File Permissions, Data Filter
   ```
 * **Methodology:** The regular `cat -` command failed because Linux interpreted the hyphen as an argument flag. By specifying the explicit path `./-`, I forced the shell to look at the actual file.
 
+
+### 🔒 Level 2 ➔ Level 3
+* **Objective:** Log into the game server using SSH and locate the password hidden in a file named `--spaces in the filename` in the home directory.
+* **Concept Learned:** Handling special characters and spaces in filenames.
+* **Command Executed:**
+  ```bash
+  # Step 1: Connect via SSH using the provided port
+  ssh bandit1@bandit.labs.overthewire.org -p 2220
+
+  # Step 2: Read the file using the relative path prefix
+  cat ./--spaces\ in\ this\ filename--
+  ```
+* **Methodology:** The regular `cat spaces in this filename` command failed because Linux interpreted the hyphen as an argument flag and the presence of spaces in the filename. By specifying the explicit path `./-`, I forced the shell to look at the actual file. And by using the escape charater `\`, it forces Linux to treat the space as a regular character in a filename.
+
 *(Note to recruiters: To preserve the integrity of the challenge, actual passwords have been omitted from this documentation.)*
 
 ---
