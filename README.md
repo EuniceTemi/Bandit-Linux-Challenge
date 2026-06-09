@@ -126,7 +126,8 @@ Skills Demonstrated: Linux CLI, SSH, Cryptography, File Permissions, Data Filter
 * **Objective:** Locate a 33-byte password file hidden somewhere on the server owned by user `bandit7` and group `bandit6`.
 * **Concept Learned:** Global filesystem indexing, system ownership filters, and standard error (`stderr`) redirection.
 * **Command Executed:**
-  ```bash
+  ```bashls
+  
   # Step 1: Connect to Level 6 from the local machine
   ssh bandit6@bandit.labs.overthewire.org -p 2220
 
@@ -137,6 +138,82 @@ Skills Demonstrated: Linux CLI, SSH, Cryptography, File Permissions, Data Filter
   cat /var/lib/dpkg/info/bandit7.password
   ```
 * **Methodology:** Because the file was located outside the user home directory, I initialized the `find` command from the root partition (`/`). I chained the `-user bandit7`, `-group bandit6`, and `-size 33c` (bytes) parameters to identify the file criteria. To prevent the console from being overwhelmed by unauthorized directory logs, I appended `2>/dev/null` to discard standard error streams, returning a single path output containing the target credential.
+
+### 🔍 Level 7 ➔ Level 8
+
+* **Objective:** Retrieve the 33-byte password stored inside `data.txt` located directly next to the keyword `millionth`.
+* **Concept Learned:** Pattern matching, plain-text string filtering, and word anchoring using the stream processor.
+* **Command Executed:**
+```bash
+# Step 1: Connect to Level 7 from the local machine
+ssh bandit7@bandit.labs.overthewire.org -p 2220
+
+# Step 2: Inspect the current directory contents to confirm data.txt exists
+ls -la
+
+# Step 3: Scan the data file and extract the line containing the target keyword
+grep "millionth" data.txt
+```
+* **Methodology:** Because the file contains a massive volume of text data, reading it manually with page readers would be inefficient. I utilized the `grep` utility to scan the contents of `data.txt` dynamically. By supplying the literal query string `"millionth"`, the terminal isolated the exact row containing the phrase, automatically displaying the adjacent alphanumeric password hash on the right side of the output line.
+
+### 🔍 Level 8 ➔ Level 9
+
+* **Objective:** Locate the unique line of text within `data.txt` that appears exactly once amidst thousands of duplicated lines.
+* **Concept Learned:** Output piping (`|`), lexicographical sorting, and filtering duplicate adjacent lines.
+* **Command Executed:**
+```bash
+# Step 1: Connect to Level 8 from the local machine
+ssh bandit8@bandit.labs.overthewire.org -p 2220
+
+# Step 2: Sort the file contents and filter for the unique single occurrence
+sort data.txt | uniq -u
+```
+* **Methodology:** The `uniq` utility can only detect duplicate lines if they are immediately adjacent to one another. To bypass this limitation, I first used `sort` to reorganize `data.txt`, grouping all identical text blocks together sequentially. I then piped (`|`) that organized output directly into `uniq -u`. The `-u` flag instructs the system to discard all repeated entries entirely and print only the solitary line that occurs exactly once, revealing the Level 9 password.
+
+### 🔍 Level 9 ➔ Level 10
+
+* **Objective:** Extract the human-readable password from the binary file `data.txt` which is prefixed by multiple equality (`=`) symbols.
+* **Concept Learned:** Binary data parsing, printable text extraction, and character pattern anchoring using regular expressions.
+* **Command Executed:**
+```bash
+# Step 1: Connect to Level 9 from the local machine
+ssh bandit9@bandit.labs.overthewire.org -p 2220
+
+# Step 2: Extract printable characters and filter for lines starting with '='
+strings data.txt | grep "^=="
+```
+* **Methodology:** The `data.txt` file is saved in a non-text binary format, making standard text editors or `cat` commands output unreadable garbage data. I used the `strings` command to filter the file and isolate only the sequences of human-readable, printable characters. I then piped (`|`) those readable lines into `grep "^=="`. The caret (`^`) regular expression anchors the search to the start of each line, isolating the row containing the password directly next to the identifying equals signs.
+
+### 🔍 Level 10 ➔ Level 11
+
+* **Objective:** Decode the Base64 encoded payload stored inside `data.txt` to reveal the plain-text password.
+* **Concept Learned:** Data encoding vs. encryption, binary-to-text decoding primitives, and standard stream piping.
+* **Command Executed:**
+```bash
+# Step 1: Connect to Level 10 from the local machine
+ssh bandit10@bandit.labs.overthewire.org -p 2220
+
+# Step 2: Decode the Base64 contents of the data file
+base64 -d data.txt
+```
+* **Methodology:** The data inside `data.txt` is encoded in Base64 format, which represents binary information using a set of 64 printable ASCII characters. Because encoding is a reversible translation rather than secure encryption, I used the native `base64` tool with the `-d` (decode) flag. The system automatically parsed the structured character blocks back into raw ASCII text, instantly printing the plain-text Level 11 password to the console.
+
+### 🔍 Level 11 ➔ Level 12
+
+* **Objective:** Decrypt the password inside `data.txt` by reversing a ROT13 cipher that has shifted all alphabetic characters by 13 positions.
+* **Concept Learned:** Substitution ciphers, character set rotation, and stream translation using standard input maps.
+* **Command Executed:**
+```bash
+# Step 1: Connect to Level 11 from the local machine
+ssh bandit11@bandit.labs.overthewire.org -p 2220
+
+# Step 2: Rotate the uppercase and lowercase character sets by 13 positions
+tr 'A-Za-z' 'N-ZA-Mn-za-m' < data.txt
+```
+* **Methodology:** The file is obfuscated using ROT13, a Caesar cipher variant where every letter is swapped with the one 13 spaces ahead of it in the alphabet. Because the alphabet contains 26 letters, running the rotation a second time completely reverses the obfuscation. I used the `tr` (translate) utility, defining the input set as `A-Za-z` and mapping it to a shifted output set starting halfway through the alphabet (`N-ZA-Mn-za-m`). By feeding `data.txt` into this filter, the scrambled text shifted back into readable alignment, displaying the Level 12 password.
+
+
+
 
 *(Note to recruiters: To preserve the integrity of the challenge, actual passwords have been omitted from this documentation.)*
 
